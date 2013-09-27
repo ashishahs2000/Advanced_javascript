@@ -9,10 +9,12 @@
 				, _hra = 0
 				, _da = 0
 				, _tax = 0
-				,salary = 0;
+				,salary = 0
+				,_salaryChangeSubscribers;
 			function getNet(){
 				return _basic + _hra + _da;
 			}
+
 			return {
 				basic : function(){
 					if (arguments.length == 0) return _basic;
@@ -33,13 +35,15 @@
 				calculate : function(){
 					/*return getNet() * ((100 - _tax)/100);*/
 					salary = getNet() * ((100 - _tax)/100);
-					if (typeof this.onSalaryChange == "function")
-						this.onSalaryChange();
+					/*if (typeof this.onSalaryChange == "function")
+						this.onSalaryChange();*/
 				},
 				salary : function(){
 					return salary;
-				},
-				onSalaryChange : function(){}
+				}
+				subscribeSalaryChange : function(callback){
+					_salaryChangeSubscribers.push(callback);
+				}
 			}
 		}());
 		var calculatorView = (function(calc){
