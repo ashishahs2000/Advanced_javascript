@@ -5,6 +5,7 @@
 	<title>Salary Calcualtor</title>
 	<script src="calculator.js"></script>
 	<script src="calculatorView.js"></script>
+	<script src="jquery-1.10.1.js"></script>
 	<script>
 		window.onload = function(){
 			calculatorView.init();
@@ -35,8 +36,9 @@
 
 	<script>
 		calculator.subscribeSalaryChange(function(){
-			document.getElementById('table').append("<tr>" + "<td>" +)
-		}
+			console.log("bvhdfuibvguile");
+			$('#table').append("<tr>" + "<td>" + document.getElementById('txtBasic').value + "</td>" + document.getElementById('txtHra').value + "</td>" + "<td>" + document.getElementById('txtDa').value + "</td>" + "<td>" + document.getElementById('txtTax').value + "</td>" + "<td>" + document.getElementById('divResult').text + "</td>" + "</tr>");
+		})
 	</script>
 </body>
 </html>
