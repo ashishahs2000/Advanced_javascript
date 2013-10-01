@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Backbone Demo</title>
+	<script src="jquery.js"></script>
+	<script src="underscore.js"></script>
+	<script src="backbone.js"></script>
+	<script src="backbone.localstorage.js"></script>
+	<script>
+	//localStorage: new Backbone.LocalStorage("SomeCollection")
+	</script>
+	<script>
+		var Book = Backbone.Model.extend({
+		  url : "books",
+		  defaults : {
+		     id : 0,
+		     title : "<No Title Yet>",
+		     units : 10,
+		     unitCost : 0
+		  },
+		  initialize : function(){
+		    console.log("a new Book model instance is created");
+		  }
+		 
+		});
+
+		var BookCollection = Backbone.Collection.extend({
+			model : Book,
+			localStorage : new Backbone.LocalStorage("Books"),
+			 initialize : function(){
+		    console.log("a Book collection instance is created");
+		  }
+		})
+
+		var BooksListView = Backbone.View.extend({
+			tagName : "table",
+
+			initialize : function(){
+			
+				this.on("all",this.collection,this.render);
+				/*this.compiledTemplate = _.template($("#bookViewTable").html());*/
+			},
+			render : function(){
+
+			this.collection.each(function(b){
+				/*this.$el.html(this.compiledTemplate(this.model.toJSON()));
+				return this;*/
+			});
+			
+			},
+
+		})
+
+		$(function())
+
+	</script>
+
+
+<!-- 	<script type="text/template" id="bookViewTemplate">
+		<tr id="tableRow">
+			<td name="txtTitle" id="txtTitle" >"<%=title%>"</td>
+			<td name="txtUnits" id="txtUnits" >"<%=units%>"</td>
+			<td name="txtUnitCost" id="txtUnitCost" >"<%=unitCost%>"</td>
+		</tr>
+	</script> -->
+</head>
+<body>
+<!-- 	<table style="border:1px solid red;">
+	<tr>
+		<th>TITLE</th>
+		<th>UNIT</th>
+		<th>UNIT COST</th>
+	</tr>
+
+</table> -->
+	
+</body>
+</html>
