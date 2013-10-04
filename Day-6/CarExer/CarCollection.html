@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Backbone Demo</title>
+	<script src="jquery.js"></script>
+	<script src="underscore.js"></script>
+	<script src="backbone.js"></script>
+	<script src="backbone.localstorage.js"></script>
+	<script>
+	//localStorage: new Backbone.LocalStorage("SomeCollection")
+	</script>
+	<script>
+		var Car = Backbone.Model.extend({
+		
+		  defaults : {
+		     title : "<No Title Yet>",
+		     units : 10,
+		     unitCost : 0
+		  },
+		  canBeSaved : function(){
+		  	return this.get("units") > 0;
+		  },
+		  initialize : function(){
+		    console.log("a new Car model instance is created");
+		  }
+		 
+		});
+
+		var CarView = Backbone.View.extend({
+		   templateId : "#CarViewTemplate",
+		   id : "content",
+		   initialize : function(){
+		     this.listenTo(this.model,'change',this.render);
+		     this.compiledTemplate =  _.template($("#CarViewTemplate").html());
+		   },
+		   events : {
+		      "click #btnSave" : "saveCar",
+		      "change input:text" : "updateCar"
+		   },
+		   render : function(){
+		   	this.$el.html(this.compiledTemplate(this.model));
+		    return this;
+		   },
+		   saveCar : function(){
+		   		console.log(this.model.toJSON(), " saved");
+		   },
+		   updateCar : function(){
+		   		console.log("updateCar triggered");
+		   		this.model.set("title",this.$el.find("#txtTitle").val());
+		   		this.model.set("units",this.$el.find("#txtUnits").val());
+		   		this.model.set("unitCost",this.$el.find("#txtUnitCost").val());
+		   },
+		   deleteCar : function(){
+		   	console.log("deleteCar")
+
+		   }   
+		});
+
+		var carsCollection = Backbone.Collection.extend({
+			model : Car,
+			localStorage : new Backbone.LocalStorage("cars")
+		});
+
+		var carsListView = Backbone.View.extend({
+			tagName : "table",
+			initialize : function(){
+				this.listenTo(this.collection,"all",this.render);
+
+			},
+			render : function(){
+				console.log("render triggered", arguments);
+				var that = this,
+					contents = '';
+				this.collection.each(function(b){
+					contents += "<tr><td>" + b.get("id") + "</td><td>" + b.get("title") + "</td><td>" + b.get("units") +"</td><td>" + b.get("unitCost") + "</td></tr>";
+					
+				});
+				this.$el.html(contents);
+				return this;
+			}
+		})
+		$(function(){
+			window.Car = new Car();
+			window.cars = new carsCollection();
+			var carsList = new carsListView({collection : cars});
+
+			$(document.body).append(carsList.render().$el);
+		});
+
+	</script>
+	<script type="text/template" id="CarViewTemplate">
+		
+		<div><label for="txtTitle">Title  :</label><input type="text" name="txtTitle" id="txtTitle" value="<%=get('title')%>"></div>
+		<div><label for="txtUnits">Units  :</label><input type="text" name="" id="txtUnits" value="<%=get('units')%>"></div>
+		<div><label for="txtUnitCost">Unit Cost  :</label><input type="text" name="" id="txtUnitCost" value="<%=get('unitCost')%>"></div>
+		<input type="button" value="Save" id="btnSave" <%=canBeSaved() ? '' : 'disabled'%>><input type="reset" value="Reset">
+		
+	</script>
+</head>
+<body>
+	
+	
+</body>
+</html>

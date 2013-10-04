@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Backbone Demo</title>
+	<script src="jquery.js"></script>
+	<script src="underscore.js"></script>
+	<script src="backbone.js"></script>
+	<script src="backbone.localstorage.js"></script>
+	<script>
+	//localStorage: new Backbone.LocalStorage("SomeCollection")
+	</script>
+	<script>
+		var Car = Backbone.Model.extend({
+			/*url : "cars",*/
+			/*localStorage : new Backbone.LocalStorage("cars"),*/
+			defaults : {
+				car_model : "Some Brand",
+				yr_of_mfg : "2012",
+				units : 2,
+				price : 600000
+			},
+			canBeSaved : function () {
+				return this.get("units") > 0;
+			},
+			initialize : function () {
+				console.log("A new car-model instance was created.");
+			}
+		});
+
+		var CarView = Backbone.View.extend({
+			templateId : "carViewTemplate",
+			initialize : function () {
+				this.listenTo(this.model, "all", this.render);
+				this.compiledTemplate = _.template($("#carViewTemplate").html());
+			},
+			events : {
+				"click #btnSave" : "saveCar",
+				"change input:text" : "updateCar"
+			},
+			render : function () {
+				this.$el.html(this.compiledTemplate(this.model));
+				return this;
+			},
+			saveCar : function () {
+				/*this.$el.append(this.compiledTemplate(this.model));
+				cars.fetch();*/
+				console.log(this.model.toJSON(), " saved.");
+			},
+			updateCar : function () {
+				this.model.set("car_model", this.$el.find("#txtCarModel").val());
+				this.model.set("yr_of_mfg", this.$el.find("#txtYrOfMfg").val());
+				this.model.set("units", this.$el.find("#txtUnits").val());
+				this.model.set("price", this.$el.find("#txtPrice").val());
+				this.model.save();
+			}
+		});
+
+		var CarCollection = Backbone.Collection.extend({
+			model : Car,
+			localStorage : new Backbone.LocalStorage("cars")
+		});
+
+		var CarCollectionView = Backbone.View.extend({
+			tagName : "table",
+			initialize : function(){
+				this.listenTo(this.collection,"all",this.render);
+			},
+			events : {
+				"click #btnSave" : this.render
+			},
+			render : function(){
+				console.log("render triggered", arguments);
+				var that = this,
+					content,
+					contents = '<tr><th>Model</th><th>Manufacturing</th><th>Units</th><th>Price</th></tr>';
+				this.collection.each(function(b){
+					/*contents += "<tr><td>" + b.get("car_model") + "</td><td>" + b.get("yr_of_mfg") + "</td><td>" + b.get("units") + "</td><td>" + b.get("price") +"</td></tr>";*/
+					content = "<tr><td>" + b.get("car_model") + "</td><td>" + b.get("yr_of_mfg") + "</td><td>" + b.get("units") + "</td><td>" + b.get("price") +"</td></tr>";
+					
+				});
+				this.$el.html(contents);
+				this.$el.append(content);
+				return this;
+			}
+		})
+
+		$(function(){
+			
+			window.cars = new CarCollection();
+			window.car = cars.create();
+			window.carView = new CarView({model:window.car});
+			window.carView.render().$el.appendTo(document.body);
+			var carCollection = new CarCollectionView({collection : cars});
+
+			$(document.body).append(carCollection.render().$el);
+		});
+
+	</script>
+	<script type="text/template" id="carViewTemplate">
+		
+		<div><label for="txtCarModel">Model :</label><input type="text" name="txtCarModel" id="txtCarModel" value="<%=get('car_model')%>"></div>
+		<div><label for="txtYrOfMfg">Year of Manufacturing  :</label><input type="text" name="txtYrOfMfg" id="txtYrOfMfg" value="<%=get('yr_of_mfg')%>"></div>
+		<div><label for="txtUnits">Units : </label><input type="text" name="txtUnits" id="txtUnits" value="<%=get('units')%>"></div>
+		<div><label for="txtPrice">Price : </label><input type="text" name="txtPrice" id="txtPrice" value="<%=get('price')%>"></div>
+		<input type="button" value="Save" id="btnSave" ><input type="reset" value="Reset">
+		
+	</script>
+	<style type="text/css">
+		table tr,th,td{
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	
+	
+</body>
+</html>
